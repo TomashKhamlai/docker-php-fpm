@@ -10,7 +10,7 @@ endif
 CURRENT_DIR = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 DIR = Dockerfiles
-IMAGE = devilbox/php-fpm
+IMAGE = tkhamlai/php-fpm
 NO_CACHE =
 PHP_EXT_DIR =
 
