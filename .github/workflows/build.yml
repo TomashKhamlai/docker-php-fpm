@@ -95,6 +95,10 @@ jobs:
           VERSION: ${{ matrix.version }}
 
 
+      - name: Generate Dockerfiles
+        run: |
+        make gen-dockerfiles
+
       # ------------------------------------------------------------
       # Base
       # ------------------------------------------------------------
