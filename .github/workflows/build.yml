@@ -97,7 +97,7 @@ jobs:
 
       - name: Generate Dockerfiles
         run: |
-        make gen-dockerfiles
+          make gen-dockerfiles
 
       # ------------------------------------------------------------
       # Base
