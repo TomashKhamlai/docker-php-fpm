@@ -75,7 +75,7 @@ help:
 	@echo "                              If set to 'False', checks are done at the end."
 	@echo
 	@echo "ARGS                          Can be added to all build-* and rebuild-* targets"
-	@echo "                              to supply additional docker buildx --push build --platform ${PLATFORM} options."
+	@echo "                              to supply additional docker buildx build --push --platform ${PLATFORM} options."
 
 
 # -------------------------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ gen-dockerfiles:
 
 build-base: _check-version
 build-base:
-	docker buildx --push build --platform ${PLATFORM} $(NO_CACHE) \
+	docker buildx build --push --platform ${PLATFORM} $(NO_CACHE) \
 		--label "org.opencontainers.image.created"="$$(date --rfc-3339=s)" \
 		--label "org.opencontainers.image.version"="$$(git rev-parse --abbrev-ref HEAD)" \
 		--label "org.opencontainers.image.revision"="$$(git rev-parse HEAD))" \
@@ -193,12 +193,12 @@ build-mods: _EXIST_IMAGE=base
 build-mods: _check-image-exists
 build-mods:
 ifeq ($(strip $(TARGET)),)
-	docker buildx --push build --platform ${PLATFORM} $(NO_CACHE) \
+	docker buildx build --push --platform ${PLATFORM} $(NO_CACHE) \
 		--target builder \
 		-t $(IMAGE):$(VERSION)-mods \
 		-f $(DIR)/mods/Dockerfile-$(VERSION) $(DIR)/mods;
 	@# $(NO_CACHE) is removed, as it would otherwise rebuild the 'builder' image again.
-	docker buildx --push build --platform ${PLATFORM} \
+	docker buildx build --push --platform ${PLATFORM} \
 		--target final \
 		--label "org.opencontainers.image.created"="$$(date --rfc-3339=s)" \
 		--label "org.opencontainers.image.version"="$$(git rev-parse --abbrev-ref HEAD)" \
@@ -212,7 +212,7 @@ ifeq ($(strip $(TARGET)),)
 		-t $(IMAGE):$(VERSION)-mods \
 		-f $(DIR)/mods/Dockerfile-$(VERSION) $(DIR)/mods;
 else
-	docker buildx --push build --platform ${PLATFORM} $(NO_CACHE) \
+	docker buildx build --push --platform ${PLATFORM} $(NO_CACHE) \
 		--target $(TARGET) \
 		--label "org.opencontainers.image.created"="$$(date --rfc-3339=s)" \
 		--label "org.opencontainers.image.version"="$$(git rev-parse --abbrev-ref HEAD)" \
@@ -227,7 +227,7 @@ build-prod: _check-version
 build-prod: _EXIST_IMAGE=mods
 build-prod: _check-image-exists
 build-prod:
-	docker buildx --push build --platform ${PLATFORM} $(NO_CACHE) \
+	docker buildx build --push --platform ${PLATFORM} $(NO_CACHE) \
 		--label "org.opencontainers.image.created"="$$(date --rfc-3339=s)" \
 		--label "org.opencontainers.image.version"="$$(git rev-parse --abbrev-ref HEAD)" \
 		--label "org.opencontainers.image.revision"="$$(git rev-parse HEAD)" \
@@ -240,7 +240,7 @@ build-work: _check-version
 build-work: _EXIST_IMAGE=prod
 build-work: _check-image-exists
 build-work:
-	docker buildx --push build --platform ${PLATFORM} $(NO_CACHE) \
+	docker buildx build --push --platform ${PLATFORM} $(NO_CACHE) \
 		--label "org.opencontainers.image.created"="$$(date --rfc-3339=s)" \
 		--label "org.opencontainers.image.version"="$$(git rev-parse --abbrev-ref HEAD)" \
 		--label "org.opencontainers.image.revision"="$$(git rev-parse HEAD)" \
