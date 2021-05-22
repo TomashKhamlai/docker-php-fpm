@@ -126,7 +126,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./Dockerfiles/base
-          file: ./Dockerfile-${{ matrix.version }}
+          file: ./Dockerfiles/base/Dockerfile-${{ matrix.version }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/php-fpm:${{ matrix.version }}-base
@@ -162,7 +162,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./Dockerfiles/mods
-          file: ./Dockerfile-${{ matrix.version }}
+          file: ./Dockerfiles/mods/Dockerfile-${{ matrix.version }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/php-fpm:${{ matrix.version }}-mods
@@ -196,7 +196,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./Dockerfiles/prod
-          file: ./Dockerfile-${{ matrix.version }}
+          file: ./Dockerfiles/prod/Dockerfile-${{ matrix.version }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/php-fpm:${{ matrix.version }}-prod
@@ -230,7 +230,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./Dockerfiles/work
-          file: ./Dockerfile-${{ matrix.version }}
+          file: ./Dockerfiles/work/Dockerfile-${{ matrix.version }}
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/php-fpm:${{ matrix.version }}-work
