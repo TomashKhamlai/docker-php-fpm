@@ -5,7 +5,6 @@
 # -------------------------------------------------------------------------------------------------
 name: build
 
-
 # -------------------------------------------------------------------------------------------------
 # When to run
 # -------------------------------------------------------------------------------------------------
@@ -14,7 +13,6 @@ on:
   pull_request:
   # Runs on Push
   push:
-
 
 # -------------------------------------------------------------------------------------------------
 # What to run
@@ -120,7 +118,6 @@ jobs:
       # ------------------------------------------------------------
       # Base
       # ------------------------------------------------------------
-
       - name: Build Base And Push
         id: docker_build_base
         uses: docker/build-push-action@v2
@@ -131,28 +128,6 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/php-fpm:${{ matrix.version }}-base
           platforms: linux/amd64,linux/arm64
-
-
-      - name: Test Base
-        run: |
-          retry() {
-            for n in $(seq ${RETRIES}); do
-              echo "[${n}/${RETRIES}] ${*}";
-              if eval "${*}"; then
-                echo "[SUCC] ${n}/${RETRIES}";
-                return 0;
-              fi;
-              sleep ${PAUSE};
-              echo "[FAIL] ${n}/${RETRIES}";
-            done;
-            return 1;
-          }
-          retry make test-base VERSION=${VERSION}
-        env:
-          VERSION: ${{ matrix.version }}
-          RETRIES: 5
-          PAUSE: 10
-
 
       # ------------------------------------------------------------
       # Mods
@@ -168,26 +143,6 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/php-fpm:${{ matrix.version }}-mods
           platforms: linux/amd64,linux/arm64
 
-      - name: Test Mods
-        run: |
-          retry() {
-            for n in $(seq ${RETRIES}); do
-              echo "[${n}/${RETRIES}] ${*}";
-              if eval "${*}"; then
-                echo "[SUCC] ${n}/${RETRIES}";
-                return 0;
-              fi;
-              sleep ${PAUSE};
-              echo "[FAIL] ${n}/${RETRIES}";
-            done;
-            return 1;
-          }
-          retry make test-mods VERSION=${VERSION}
-        env:
-          VERSION: ${{ matrix.version }}
-          RETRIES: 5
-          PAUSE: 10
-
       # ------------------------------------------------------------
       # Prod
       # ------------------------------------------------------------
@@ -201,26 +156,6 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/php-fpm:${{ matrix.version }}-prod
           platforms: linux/amd64,linux/arm64
-
-      - name: Test Prod
-        run: |
-          retry() {
-            for n in $(seq ${RETRIES}); do
-              echo "[${n}/${RETRIES}] ${*}";
-              if eval "${*}"; then
-                echo "[SUCC] ${n}/${RETRIES}";
-                return 0;
-              fi;
-              sleep ${PAUSE};
-              echo "[FAIL] ${n}/${RETRIES}";
-            done;
-            return 1;
-          }
-          retry make test-prod VERSION=${VERSION}
-        env:
-          VERSION: ${{ matrix.version }}
-          RETRIES: 5
-          PAUSE: 10
 
       # ------------------------------------------------------------
       # Work
@@ -236,27 +171,6 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/php-fpm:${{ matrix.version }}-work
           platforms: linux/amd64,linux/arm64
 
-      - name: Test Work
-        run: |
-          retry() {
-            for n in $(seq ${RETRIES}); do
-              echo "[${n}/${RETRIES}] ${*}";
-              if eval "${*}"; then
-                echo "[SUCC] ${n}/${RETRIES}";
-                return 0;
-              fi;
-              sleep ${PAUSE};
-              echo "[FAIL] ${n}/${RETRIES}";
-            done;
-            return 1;
-          }
-          retry make test-work VERSION=${VERSION}
-        env:
-          VERSION: ${{ matrix.version }}
-          RETRIES: 5
-          PAUSE: 10
-
-
       # ------------------------------------------------------------
       # Diff README.md
       # ------------------------------------------------------------
@@ -266,7 +180,6 @@ jobs:
           git diff --quiet || { echo "Build Changes"; git diff; git status; false; }
         env:
           VERSION: ${{ matrix.version }}
-
 
       # ------------------------------------------------------------
       # Deploy
