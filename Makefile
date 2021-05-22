@@ -151,7 +151,6 @@ ifeq ($(strip $(VERSION)),)
 	cd build; ./gen-readme.sh
 else
 	@echo "Generate README.md for PHP $(VERSION)"
-	@$(MAKE) --no-print-directory _check-version
 	@$(MAKE) --no-print-directory _check-image-exists _EXIST_IMAGE=base
 	@$(MAKE) --no-print-directory _check-image-exists _EXIST_IMAGE=mods
 	cd build; ./gen-readme.sh $(VERSION)
@@ -177,7 +176,6 @@ gen-dockerfiles:
 #  BUILD TARGETS
 # -------------------------------------------------------------------------------------------------
 
-build-base: _check-version
 build-base:
 	docker buildx build --push --platform ${PLATFORM} $(NO_CACHE) \
 		--label "org.opencontainers.image.created"="$$(date --rfc-3339=s)" \
@@ -187,8 +185,6 @@ build-base:
 		-t $(IMAGE):${VERSION}-base \
 		-f $(DIR)/base/Dockerfile-${VERSION} $(DIR)/base
 
-
-build-mods: _check-version
 build-mods: _EXIST_IMAGE=base
 build-mods: _check-image-exists
 build-mods:
@@ -222,8 +218,6 @@ else
 		-f $(DIR)/mods/Dockerfile-$(VERSION) $(DIR)/mods
 endif
 
-
-build-prod: _check-version
 build-prod: _EXIST_IMAGE=mods
 build-prod: _check-image-exists
 build-prod:
@@ -235,8 +229,6 @@ build-prod:
 		-t $(IMAGE):${VERSION}-prod \
 		-f $(DIR)/prod/Dockerfile-${VERSION} $(DIR)/prod
 
-
-build-work: _check-version
 build-work: _EXIST_IMAGE=prod
 build-work: _check-image-exists
 build-work:
@@ -274,32 +266,18 @@ rebuild-work: build-work
 #  TEST TARGETS
 # -------------------------------------------------------------------------------------------------
 
-test-base: _check-version
 test-base: _EXIST_IMAGE=base
 test-base: _check-image-exists
-test-base:
-	./tests/test.sh ${VERSION} base
 
-
-test-mods: _check-version
 test-mods: _EXIST_IMAGE=mods
 test-mods: _check-image-exists
-test-mods: _check-version
-	./tests/test.sh ${VERSION} mods
 
-
-test-prod: _check-version
 test-prod: _EXIST_IMAGE=prod
 test-prod: _check-image-exists
-test-prod: _check-version
-	./tests/test.sh ${VERSION} prod
 
-
-test-work: _check-version
 test-work: _EXIST_IMAGE=work
 test-work: _check-image-exists
-test-work: _check-version
-	./tests/test.sh ${VERSION} work
+
 
 
 # -------------------------------------------------------------------------------------------------
@@ -345,60 +323,6 @@ ifeq ($(strip $(NEW_TAG)),)
 	@$(error Exiting)
 endif
 	docker tag $(IMAGE):$(OLD_TAG) $(IMAGE):$(NEW_TAG)
-
-
-
-# -------------------------------------------------------------------------------------------------
-#  HELPER TARGETS
-# -------------------------------------------------------------------------------------------------
-
-_check-version:
-ifeq ($(strip $(VERSION)),)
-	@$(info This make target requires the VERSION variable to be set.)
-	@$(info make build-<flavour> VERSION=7.3)
-	@$(info )
-	@$(error Exiting)
-endif
-ifeq ($(VERSION),5.2)
-else
-ifeq ($(VERSION),5.3)
-else
-ifeq ($(VERSION),5.4)
-else
-ifeq ($(VERSION),5.5)
-else
-ifeq ($(VERSION),5.6)
-else
-ifeq ($(VERSION),7.0)
-else
-ifeq ($(VERSION),7.1)
-else
-ifeq ($(VERSION),7.2)
-else
-ifeq ($(VERSION),7.3)
-else
-ifeq ($(VERSION),7.4)
-else
-ifeq ($(VERSION),8.0)
-else
-ifeq ($(VERSION),8.1)
-else
-	@$(info VERSION can only be: '5.2', '5.3', '5.4', '5.5', '5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0' or '8.1')
-	@$(info )
-	@$(error Exiting)
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-endif
-	@echo "Version $(VERSION) is valid"
 
 
 _check-image-exists:

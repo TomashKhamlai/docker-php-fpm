@@ -14,14 +14,6 @@ CWD="$(cd -P -- "$(dirname -- "$0")" && pwd -P)"
 ###
 print_usage() {
 	echo "Usage: gen-readme.sh"
-	echo "       gen-readme.sh 5.2"
-	echo "       gen-readme.sh 5.3"
-	echo "       gen-readme.sh 5.4"
-	echo "       gen-readme.sh 5.5"
-	echo "       gen-readme.sh 5.6"
-	echo "       gen-readme.sh 7.0"
-	echo "       gen-readme.sh 7.1"
-	echo "       gen-readme.sh 7.2"
 	echo "       gen-readme.sh 7.3"
 	echo "       gen-readme.sh 7.4"
 	echo "       gen-readme.sh 8.0"
@@ -92,14 +84,6 @@ update_readme() {
 ###
 if [ "${#}" -eq "0" ]; then
 	# Update PHP modules for all versions at once
-	update_readme "5.2"
-	update_readme "5.3"
-	update_readme "5.4"
-	update_readme "5.5"
-	update_readme "5.6"
-	update_readme "7.0"
-	update_readme "7.1"
-	update_readme "7.2"
 	update_readme "7.3"
 	update_readme "7.4"
 	update_readme "8.0"
@@ -110,14 +94,6 @@ elif [ "${#}" -gt "1" ]; then
 	print_usage
 	exit 1
 else
-	if [ "${1}" != "5.2" ] \
-	&& [ "${1}" != "5.3" ] \
-	&& [ "${1}" != "5.4" ] \
-	&& [ "${1}" != "5.5" ] \
-	&& [ "${1}" != "5.6" ] \
-	&& [ "${1}" != "7.0" ] \
-	&& [ "${1}" != "7.1" ] \
-	&& [ "${1}" != "7.2" ] \
 	&& [ "${1}" != "7.3" ] \
 	&& [ "${1}" != "7.4" ] \
 	&& [ "${1}" != "8.0" ] \
