@@ -283,31 +283,6 @@ test-work: _check-image-exists
 # -------------------------------------------------------------------------------------------------
 #  DOCKERHUB TARGETS
 # -------------------------------------------------------------------------------------------------
-login:
-ifeq ($(strip $(USERNAME)),)
-	@$(info This make target requires the USERNAME variable to be set.)
-	@$(info make login USERNAME= PASSWORD=)
-	@$(info )
-	@$(error Exiting)
-endif
-ifeq ($(strip $(PASSWORD)),)
-	@$(info This make target requires the PASSWORD variable to be set.)
-	@$(info make login USERNAME= PASSWORD=)
-	@$(info )
-	@$(error Exiting)
-endif
-	@yes | docker login --username $(USERNAME) --password $(PASSWORD)
-
-
-push:
-ifeq ($(strip $(TAG)),)
-	@$(info This make target requires the TAG variable to be set.)
-	@$(info make push TAG=)
-	@$(info )
-	@$(error Exiting)
-endif
-	docker push $(IMAGE):$(TAG)
-
 
 tag:
 ifeq ($(strip $(OLD_TAG)),)

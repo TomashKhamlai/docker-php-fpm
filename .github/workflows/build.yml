@@ -44,7 +44,8 @@ jobs:
       - name: Set variables
         id: vars
         run: |
-
+          echo "MATRIX VERSION: ${VERSION}"
+          echo ""
           # Retrieve git info (tags, etc)
           git fetch --all
 
@@ -107,29 +108,26 @@ jobs:
         with:
           install: true
 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
       # ------------------------------------------------------------
       # Base
       # ------------------------------------------------------------
-      - name: Build Base
-        run: |
-          retry() {
-            for n in $(seq ${RETRIES}); do
-              echo "[${n}/${RETRIES}] ${*}";
-              if eval "${*}"; then
-                echo "[SUCC] ${n}/${RETRIES}";
-                return 0;
-              fi;
-              sleep ${PAUSE};
-              echo "[FAIL] ${n}/${RETRIES}";
-            done;
-            return 1;
-          }
-          retry make _pull-base-image VERSION=${VERSION}
-          retry make build-base VERSION=${VERSION}
-        env:
-          VERSION: ${{ matrix.version }}
-          RETRIES: 5
-          PAUSE: 10
+
+      - name: Build Base And Push
+        id: docker_build_base
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Dockerfiles/base
+          file: ./Dockerfile-${{ matrix.version }}
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/php-fpm:${{ matrix.version }}-base
+          platforms: linux/amd64,linux/arm64
 
       - name: Test Base
         run: |
@@ -155,25 +153,16 @@ jobs:
       # ------------------------------------------------------------
       # Mods
       # ------------------------------------------------------------
-      - name: Build Mods
-        run: |
-          retry() {
-            for n in $(seq ${RETRIES}); do
-              echo "[${n}/${RETRIES}] ${*}";
-              if eval "${*}"; then
-                echo "[SUCC] ${n}/${RETRIES}";
-                return 0;
-              fi;
-              sleep ${PAUSE};
-              echo "[FAIL] ${n}/${RETRIES}";
-            done;
-            return 1;
-          }
-          retry make build-mods VERSION=${VERSION}
-        env:
-          VERSION: ${{ matrix.version }}
-          RETRIES: 5
-          PAUSE: 10
+      - name: Build Mods And Push
+        id: docker_build_mods
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Dockerfiles/mods
+          file: ./Dockerfile-${{ matrix.version }}
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/php-fpm:${{ matrix.version }}-mods
+          platforms: linux/amd64,linux/arm64
 
       - name: Test Mods
         run: |
@@ -195,29 +184,19 @@ jobs:
           RETRIES: 5
           PAUSE: 10
 
-
       # ------------------------------------------------------------
       # Prod
       # ------------------------------------------------------------
-      - name: Build Prod
-        run: |
-          retry() {
-            for n in $(seq ${RETRIES}); do
-              echo "[${n}/${RETRIES}] ${*}";
-              if eval "${*}"; then
-                echo "[SUCC] ${n}/${RETRIES}";
-                return 0;
-              fi;
-              sleep ${PAUSE};
-              echo "[FAIL] ${n}/${RETRIES}";
-            done;
-            return 1;
-          }
-          retry make build-prod VERSION=${VERSION}
-        env:
-          VERSION: ${{ matrix.version }}
-          RETRIES: 5
-          PAUSE: 10
+      - name: Build Prod And Push
+        id: docker_build_prod
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Dockerfiles/prod
+          file: ./Dockerfile-${{ matrix.version }}
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/php-fpm:${{ matrix.version }}-prod
+          platforms: linux/amd64,linux/arm64
 
       - name: Test Prod
         run: |
@@ -239,29 +218,19 @@ jobs:
           RETRIES: 5
           PAUSE: 10
 
-
       # ------------------------------------------------------------
       # Work
       # ------------------------------------------------------------
-      - name: Build Work
-        run: |
-          retry() {
-            for n in $(seq ${RETRIES}); do
-              echo "[${n}/${RETRIES}] ${*}";
-              if eval "${*}"; then
-                echo "[SUCC] ${n}/${RETRIES}";
-                return 0;
-              fi;
-              sleep ${PAUSE};
-              echo "[FAIL] ${n}/${RETRIES}";
-            done;
-            return 1;
-          }
-          retry make build-work VERSION=${VERSION}
-        env:
-          VERSION: ${{ matrix.version }}
-          RETRIES: 5
-          PAUSE: 10
+      - name: Build Work And Push
+        id: docker_build_work
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Dockerfiles/work
+          file: ./Dockerfile-${{ matrix.version }}
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/php-fpm:${{ matrix.version }}-work
+          platforms: linux/amd64,linux/arm64
 
       - name: Test Work
         run: |
@@ -328,14 +297,11 @@ jobs:
           retry make tag OLD_TAG="${VERSION}-work" NEW_TAG="${DOCKER_TAG_WORK}"
           docker images
 
-          # Login
-          retry make login USERNAME=${{ secrets.DOCKERHUB_USERNAME }} PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }}
-
           # Push
-          retry make push TAG=${DOCKER_TAG_BASE}
-          retry make push TAG=${DOCKER_TAG_MODS}
-          retry make push TAG=${DOCKER_TAG_PROD}
-          retry make push TAG=${DOCKER_TAG_WORK}
+          # retry make push TAG=${DOCKER_TAG_BASE}
+          # retry make push TAG=${DOCKER_TAG_MODS}
+          # retry make push TAG=${DOCKER_TAG_PROD}
+          # retry make push TAG=${DOCKER_TAG_WORK}
         env:
           VERSION: ${{ matrix.version }}
           RETRIES: 5
