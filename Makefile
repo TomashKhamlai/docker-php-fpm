@@ -151,8 +151,8 @@ ifeq ($(strip $(VERSION)),)
 	cd build; ./gen-readme.sh
 else
 	@echo "Generate README.md for PHP $(VERSION)"
-	@$(MAKE) --no-print-directory _check-image-exists _EXIST_IMAGE=base
-	@$(MAKE) --no-print-directory _check-image-exists _EXIST_IMAGE=mods
+	@$(MAKE) --no-print-directory _EXIST_IMAGE=base
+	@$(MAKE) --no-print-directory _EXIST_IMAGE=mods
 	cd build; ./gen-readme.sh $(VERSION)
 endif
 
@@ -186,7 +186,6 @@ build-base:
 		-f $(DIR)/base/Dockerfile-${VERSION} $(DIR)/base
 
 build-mods: _EXIST_IMAGE=base
-build-mods: _check-image-exists
 build-mods:
 ifeq ($(strip $(TARGET)),)
 	docker buildx build --push --platform ${PLATFORM} $(NO_CACHE) \
@@ -219,7 +218,6 @@ else
 endif
 
 build-prod: _EXIST_IMAGE=mods
-build-prod: _check-image-exists
 build-prod:
 	docker buildx build --push --platform ${PLATFORM} $(NO_CACHE) \
 		--label "org.opencontainers.image.created"="$$(date --rfc-3339=s)" \
@@ -230,7 +228,6 @@ build-prod:
 		-f $(DIR)/prod/Dockerfile-${VERSION} $(DIR)/prod
 
 build-work: _EXIST_IMAGE=prod
-build-work: _check-image-exists
 build-work:
 	docker buildx build --push --platform ${PLATFORM} $(NO_CACHE) \
 		--label "org.opencontainers.image.created"="$$(date --rfc-3339=s)" \
@@ -267,17 +264,12 @@ rebuild-work: build-work
 # -------------------------------------------------------------------------------------------------
 
 test-base: _EXIST_IMAGE=base
-test-base: _check-image-exists
 
 test-mods: _EXIST_IMAGE=mods
-test-mods: _check-image-exists
 
 test-prod: _EXIST_IMAGE=prod
-test-prod: _check-image-exists
 
 test-work: _EXIST_IMAGE=work
-test-work: _check-image-exists
-
 
 
 # -------------------------------------------------------------------------------------------------

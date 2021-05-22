@@ -104,7 +104,6 @@ jobs:
         run: |
           make gen-dockerfiles
 
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
@@ -206,19 +205,6 @@ jobs:
           echo "DOCKER_TAG_MODS=${DOCKER_TAG_MODS}"
           echo "DOCKER_TAG_PROD=${DOCKER_TAG_PROD}"
           echo "DOCKER_TAG_WORK=${DOCKER_TAG_WORK}"
-
-          # Tag image
-          retry make tag OLD_TAG="${VERSION}-base" NEW_TAG="${DOCKER_TAG_BASE}"
-          retry make tag OLD_TAG="${VERSION}-mods" NEW_TAG="${DOCKER_TAG_MODS}"
-          retry make tag OLD_TAG="${VERSION}-prod" NEW_TAG="${DOCKER_TAG_PROD}"
-          retry make tag OLD_TAG="${VERSION}-work" NEW_TAG="${DOCKER_TAG_WORK}"
-          docker images
-
-          # Push
-          # retry make push TAG=${DOCKER_TAG_BASE}
-          # retry make push TAG=${DOCKER_TAG_MODS}
-          # retry make push TAG=${DOCKER_TAG_PROD}
-          # retry make push TAG=${DOCKER_TAG_WORK}
         env:
           VERSION: ${{ matrix.version }}
           RETRIES: 5
