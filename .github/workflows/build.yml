@@ -27,14 +27,6 @@ jobs:
       fail-fast: False
       matrix:
         version:
-          - '5.2'
-          - '5.3'
-          - '5.4'
-          - '5.5'
-          - '5.6'
-          - '7.0'
-          - '7.1'
-          - '7.2'
           - '7.3'
           - '7.4'
           - '8.0'
@@ -124,7 +116,7 @@ jobs:
           retry make build-base VERSION=${VERSION}
         env:
           VERSION: ${{ matrix.version }}
-          RETRIES: 20
+          RETRIES: 5
           PAUSE: 10
 
       - name: Test Base
@@ -144,7 +136,7 @@ jobs:
           retry make test-base VERSION=${VERSION}
         env:
           VERSION: ${{ matrix.version }}
-          RETRIES: 20
+          RETRIES: 5
           PAUSE: 10
 
 
@@ -168,7 +160,7 @@ jobs:
           retry make build-mods VERSION=${VERSION}
         env:
           VERSION: ${{ matrix.version }}
-          RETRIES: 20
+          RETRIES: 5
           PAUSE: 10
 
       - name: Test Mods
@@ -188,7 +180,7 @@ jobs:
           retry make test-mods VERSION=${VERSION}
         env:
           VERSION: ${{ matrix.version }}
-          RETRIES: 20
+          RETRIES: 5
           PAUSE: 10
 
 
@@ -212,7 +204,7 @@ jobs:
           retry make build-prod VERSION=${VERSION}
         env:
           VERSION: ${{ matrix.version }}
-          RETRIES: 20
+          RETRIES: 5
           PAUSE: 10
 
       - name: Test Prod
@@ -232,7 +224,7 @@ jobs:
           retry make test-prod VERSION=${VERSION}
         env:
           VERSION: ${{ matrix.version }}
-          RETRIES: 20
+          RETRIES: 5
           PAUSE: 10
 
 
@@ -256,7 +248,7 @@ jobs:
           retry make build-work VERSION=${VERSION}
         env:
           VERSION: ${{ matrix.version }}
-          RETRIES: 20
+          RETRIES: 5
           PAUSE: 10
 
       - name: Test Work
@@ -276,7 +268,7 @@ jobs:
           retry make test-work VERSION=${VERSION}
         env:
           VERSION: ${{ matrix.version }}
-          RETRIES: 20
+          RETRIES: 5
           PAUSE: 10
 
 
@@ -334,7 +326,7 @@ jobs:
           retry make push TAG=${DOCKER_TAG_WORK}
         env:
           VERSION: ${{ matrix.version }}
-          RETRIES: 20
+          RETRIES: 5
           PAUSE: 10
         # https://help.github.com/en/github/automating-your-workflow-with-github-actions/contexts-and-expression-syntax-for-github-actions#functions
         if: github.event.pull_request.base.repo.id == github.event.pull_request.head.repo.id
