@@ -145,17 +145,6 @@ lint-yaml:
 #  GENERATE TARGETS
 # -------------------------------------------------------------------------------------------------
 
-gen-readme:
-ifeq ($(strip $(VERSION)),)
-	@echo "Generate README.md for all PHP versions"
-	cd build; ./gen-readme.sh
-else
-	@echo "Generate README.md for PHP $(VERSION)"
-	@$(MAKE) --no-print-directory _EXIST_IMAGE=base
-	@$(MAKE) --no-print-directory _EXIST_IMAGE=mods
-	cd build; ./gen-readme.sh $(VERSION)
-endif
-
 gen-dockerfiles:
 	docker run --rm \
 		$$(tty -s && echo "-it" || echo) \
